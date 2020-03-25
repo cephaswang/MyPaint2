@@ -1,2 +1,2 @@
-# MyPaint2
- MyPaint2
+# MyPaint
+ MyPaint
