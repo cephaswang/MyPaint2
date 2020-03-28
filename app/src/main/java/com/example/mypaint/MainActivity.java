@@ -13,7 +13,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,13 +35,27 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private SeekBar sb_normal;
+    // 调试信息
+    private static final String TAG = "MainActivity";
 
     private PaintView paintView;
     private final static int REQ_PERMISSIONS = 0;
     Button  buttonBack;
 
+    private PaintHandler mPaintHandler;
+    private DrawHandler  mDrawHandler;
+
     Bitmap  bmScreen;
     View    screen;
+
+    // Constants that indicate the current connection state
+    public static final int MESSAGE_FONT_SIZE  = 1;       // we're doing nothing
+    public static final int MESSAGE_FONT_COLOR = 2;     // now listening for incoming connections
+    public static final int MESSAGE_PATH_START = 3; // now initiating an outgoing connection
+    public static final int MESSAGE_PATH_MOVE  = 4;  // now connected to a remote device
+    public static final int MESSAGE_PATH_ENDS  = 5;  // now connected to a remote device
+    public static final int MESSAGE_ACTS_UNDO  = 6;  // now connected to a remote device
+    public static final int MESSAGE_ACTS_CLEAR = 7;  // now connected to a remote device
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         paintView.init(metrics);
 
+        mPaintHandler = new PaintHandler();
+        mDrawHandler  = new DrawHandler();
+
+        paintView.setHandler(mPaintHandler);
+
         screen = (View) findViewById(R.id.paintView);
         sb_normal  = (SeekBar) findViewById(R.id.seekBar);
         buttonBack = (Button) findViewById(R.id.buttonBack);
@@ -57,8 +79,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // txt_cur.setText("当前进度值:" + progress + "  / 100 ");
-                paintView.setStrokeWidth(progress);
+                paintView.setStrokeWidth(progress + 1);
                 buttonBack.setText( String.valueOf(progress + 1) );
+                mPaintHandler.obtainMessage(MESSAGE_FONT_SIZE,(progress + 1),0,"").sendToTarget();
             }
 
             @Override
@@ -74,7 +97,138 @@ public class MainActivity extends AppCompatActivity {
         });
 
         askPermissions();
+
+        drawAct();
     }
+
+    public void drawAct(){
+
+        paintView.SET_FromRemove(true);
+
+        mDrawHandler.obtainMessage(MESSAGE_FONT_SIZE,(20),0,"").sendToTarget();
+
+        mDrawHandler.obtainMessage(MESSAGE_FONT_COLOR,Color.RED,0,"").sendToTarget();
+
+        String path = "404.96704,488.96484";
+        mDrawHandler.obtainMessage(MainActivity.MESSAGE_PATH_START,0,0,path).sendToTarget();
+
+        path = "410.46716,510.96484";
+        mDrawHandler.obtainMessage(MainActivity.MESSAGE_PATH_MOVE,0,0,path).sendToTarget();
+
+        path = "310.46716,410.96484";
+        mDrawHandler.obtainMessage(MainActivity.MESSAGE_PATH_MOVE,0,0,path).sendToTarget();
+
+        path = "410.46716,510.96484";
+        mDrawHandler.obtainMessage(MainActivity.MESSAGE_PATH_ENDS,0,0,"").sendToTarget();
+
+    //    mDrawHandler.obtainMessage(MESSAGE_ACTS_CLEAR,0,0,"").sendToTarget();
+     //   mDrawHandler.obtainMessage(MESSAGE_ACTS_UNDO,0,0,"").sendToTarget();
+
+
+    }
+    /**
+     * 方式1：新建Handler子类（内部类）
+     */
+
+    // 步骤1：自定义Handler子类（继承Handler类） & 复写handleMessage（）方法
+    public class PaintHandler extends Handler {
+
+        // 通过复写handlerMessage() 从而确定更新UI的操作
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what) {
+
+                case MESSAGE_FONT_SIZE:
+                    int font_size = Integer.valueOf(msg.arg1);
+                    Log.d(TAG, "font_size" + String.valueOf(font_size));
+                    break;
+                case MESSAGE_FONT_COLOR:
+                    int font_color = Integer.valueOf(msg.arg1);
+                    Log.d(TAG, "font_color" + String.valueOf(font_color));
+                    break;
+                case MESSAGE_PATH_START:
+                    Log.d(TAG, "path_Start" + msg.obj);
+                    break;
+                case MESSAGE_PATH_MOVE:
+                    Log.d(TAG, "path_Move" + msg.obj);
+                    break;
+                case MESSAGE_PATH_ENDS:
+                    Log.d(TAG, "path_Ends" + msg.obj);
+                    break;
+                case MESSAGE_ACTS_UNDO:
+                    Log.d(TAG, "acts_undo");
+                    break;
+                case MESSAGE_ACTS_CLEAR:
+                    Log.d(TAG, "acts_clear");
+                    break;
+
+            }
+
+        }
+    }
+
+    // 步骤1：自定义Handler子类（继承Handler类） & 复写handleMessage（）方法
+    public class DrawHandler extends Handler {
+        // 通过复写handlerMessage() 从而确定更新UI的操作
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what) {
+
+                case MESSAGE_FONT_SIZE:
+                    int font_size = Integer.valueOf(msg.arg1);
+                    Log.d(TAG, "font_size" + String.valueOf(font_size));
+                    paintView.setStrokeWidth(font_size);
+                    break;
+
+                case MESSAGE_FONT_COLOR: {
+                    int font_color = Integer.valueOf(msg.arg1);
+                    paintView.setStrokeColor(font_color);
+                }
+                    break;
+
+                case MESSAGE_PATH_START: {
+                    Log.d(TAG, "path_Start" + msg.obj);
+                    String pathStr = (String) msg.obj;
+                    String[] Points = pathStr.split(",");
+                    paintView.touchStart(Float.parseFloat(Points[0]), Float.parseFloat(Points[1]));
+                }
+                    break;
+                case MESSAGE_PATH_MOVE:
+                {
+                    Log.d(TAG, "path_Move" + msg.obj);
+                    String pathStr = (String) msg.obj;
+                    String[] Points = pathStr.split(",");
+                    paintView.touchMove(Float.parseFloat(Points[0]), Float.parseFloat(Points[1]));
+                }
+                    break;
+                case MESSAGE_PATH_ENDS:
+                    Log.d(TAG, "path_Ends" + msg.obj);
+                    paintView.touchUp();
+                    break;
+                case MESSAGE_ACTS_UNDO:
+                    Log.d(TAG, "acts_undo");
+                    paintView.onBack(screen);
+                    break;
+
+                case MESSAGE_ACTS_CLEAR:
+                    Log.d(TAG, "acts_clear");
+                    paintView.clear();
+                    break;
+
+            }
+        }
+
+    }
+
+/*
+
+————————————————
+版权声明：本文为CSDN博主「Carson_Ho」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/carson_ho/java/article/details/80305411
+
+*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -97,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.clear:
                 paintView.clear();
+                mPaintHandler.obtainMessage(MESSAGE_ACTS_CLEAR,0,0,"").sendToTarget();
                 return true;
             case R.id.save:
 
@@ -157,20 +312,25 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onBack(View view) {
+        mPaintHandler.obtainMessage(MESSAGE_ACTS_UNDO,0,0,"").sendToTarget();
         paintView.onBack(screen);
 
     }
 
     public void onColorYellow (View view){
+        mPaintHandler.obtainMessage(MESSAGE_FONT_COLOR,Color.YELLOW,0,"").sendToTarget();
         paintView.setStrokeColor(Color.YELLOW);
     }
     public void onColorRed (View view){
+        mPaintHandler.obtainMessage(MESSAGE_FONT_COLOR,Color.RED,0,"").sendToTarget();
         paintView.setStrokeColor(Color.RED);
     }
     public void onColorBlue (View view){
+        mPaintHandler.obtainMessage(MESSAGE_FONT_COLOR,Color.BLUE,0,"").sendToTarget();
         paintView.setStrokeColor(Color.BLUE);
     }
     public void onColorBlack (View view){
+        mPaintHandler.obtainMessage(MESSAGE_FONT_COLOR,Color.BLACK,0,"").sendToTarget();
         paintView.setStrokeColor(Color.BLACK);
     }
 

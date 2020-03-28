@@ -14,6 +14,7 @@ import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,6 +37,8 @@ public class PaintView extends View {
     private Path   mPath;
     private Paint  mPaint;
 
+    private Handler mHandler;
+
     // 單一條線
     private ArrayList<FingerPath> paths = new ArrayList<>();
 
@@ -51,7 +54,12 @@ public class PaintView extends View {
     private Bitmap mBitmap;
     private Canvas mCanvas;
     private Paint mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+    private boolean fromRemove = false;
     // private static String filePath = Context.getExternalFilesDir(null).getAbsolutePath();
+
+    public void setHandler(Handler handler){
+        mHandler = handler;
+    }
 
     public void setStrokeWidth(int brush_SIZE){
         BRUSH_SIZE  = brush_SIZE + 1;
@@ -163,8 +171,12 @@ public class PaintView extends View {
         invalidate();
     }
 
+    void SET_FromRemove(boolean isRemove) {
+        fromRemove = isRemove;
+    }
+
     // 起點
-    private void touchStart(float x, float y) {
+    void touchStart(float x, float y) {
         mPath = new Path();
         FingerPath fp = new FingerPath(currentColor, emboss, blur, strokeWidth, mPath);
         paths.add(fp);
@@ -173,10 +185,17 @@ public class PaintView extends View {
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
+
+        if(! fromRemove){
+            return;
+        }
+
+        String path = String.valueOf(mX) + "," + String.valueOf(mY);
+        mHandler.obtainMessage(MainActivity.MESSAGE_PATH_START,0,0,path).sendToTarget();
     }
 
     // 移動
-    private void touchMove(float x, float y) {
+    void touchMove(float x, float y) {
         float dx = Math.abs(x - mX);
         float dy = Math.abs(y - mY);
 
@@ -184,12 +203,26 @@ public class PaintView extends View {
             mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
             mX = x;
             mY = y;
+
+            if(! fromRemove){
+                return;
+            }
+
+            String path = String.valueOf(mX) + "," + String.valueOf(mY);
+            mHandler.obtainMessage(MainActivity.MESSAGE_PATH_MOVE,0,0,path).sendToTarget();
         }
     }
 
     // 線段結束
-    private void touchUp() {
+    void touchUp() {
         mPath.lineTo(mX, mY);
+
+        if(! fromRemove){
+            return;
+        }
+
+        // String path = String.valueOf(mX) + "," + String.valueOf(mY);
+        mHandler.obtainMessage(MainActivity.MESSAGE_PATH_ENDS,0,0,"").sendToTarget();
     }
 
     // 手繪事件
