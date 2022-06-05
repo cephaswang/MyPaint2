@@ -10,10 +10,10 @@ class Solution {
      * @return Boolean 
      */
      function isValid($s) {
-		 $stack = array();
-		 $result = str_split($s);
+		$stack = array();
+		$result = str_split($s);
 
-		 for($Ux = 0 ; $Ux<  count($result) ; $Ux++ ){
+		for($Ux = 0 ; $Ux<  count($result) ; $Ux++ ){
 			$Pointer = count($stack) - 1;
 			$Data = $result[$Ux];
 
@@ -24,40 +24,23 @@ class Solution {
 				continue;
 			}
 
-			if ( $Data == ")" ){
-				if ( $stack[$Pointer] == "(" ){
-					array_pop($stack);
-					print_r($stack);
-					continue;
-				} else {
-					array_push($stack, $Data);
-					print_r($stack);
-					continue;
-				}
+			if ( $Data == ")" && $stack[$Pointer] == "(" ){
+				array_pop($stack);
+				print_r($stack);
+				continue;
 			}
 
-			if ( $Data == "}" ){
-				if ( $stack[$Pointer] == "{" ){
-					array_pop($stack);
-					print_r($stack);
-					continue;
-				} else {
-					array_push($stack, $Data);
-					print_r($stack);
-					continue;
-				}
+			if ( $Data == "}" && $stack[$Pointer] == "{" ){
+				array_pop($stack);
+				print_r($stack);
+				continue;
 			}
 
 
-			if ( $Data == "]" ){
-				if ( $stack[$Pointer] == "[" ){
-					array_pop($stack);
-					continue;
-				} else {
-					array_push($stack, $Data);
-					print_r($stack);
-					continue;
-				}
+			if ( $Data == "]" && $stack[$Pointer] == "[" ){
+				array_pop($stack);
+				print_r($stack);
+				continue;
 			}
 
 			array_push($stack, $Data);
