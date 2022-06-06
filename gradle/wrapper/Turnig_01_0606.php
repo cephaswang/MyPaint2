@@ -2,8 +2,20 @@
 
 class Solution {
 	function sumofLeftLeaves(TreeNode $root = null) {
+		$stack = array();
 		print_r($root);
-		return 0;
+		if ( $root == null ){
+			return 0;
+		}
+
+		while ( $root && $root->left != null ){
+			$root = $root->left;
+			echo $root->data."\r\n";
+			// $sum += intVal( $root->data );
+			array_push($stack, intVal($root->data) );
+		}
+		// echo $sum;
+		return array_sum($stack);
 	}
 }
 
@@ -45,10 +57,11 @@ function buildQueue($raw) {
 }
 
 // $input = explode(',' , readline());
-$input = [9,3,20,15,7];
+// $input = [9,3,20,15,7];
+$input = [3,9,20,15,7];
 $queue = buildQueue($input);
 $tree  = deserialize($queue) ;
 $solution = new Solution();
 $output = $solution-> sumofLeftLeaves($tree) ;
 
-echo $output;
+echo "\r\n----[".$output."]----\r\n";
