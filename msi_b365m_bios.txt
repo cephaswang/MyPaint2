@@ -1,0 +1,72 @@
+1
+Setting\Advance\Windows OS Configuration\Fast Boot
+Disabled
+
+2
+Setting\Advance\Windows OS Configuration\Secure Boot
+Disabled
+
+3
+Setting\Advance\Super IO Configuration\Serial(COM) Port O Configuration
+Disabled
+
+4
+Setting\Advance\Super IO Configuration\Parallel(LPT) Port Configuration
+Disabled
+
+5
+Overclocking\CPU Features\Intel VT-D Tech
+Disabled
+
+6
+CSM (Compatibility Support Module) under the Boot Tab.
+none
+
+7
+Intel Platform Trust
+None
+
+8
+Overclocking\CPU Features\SW Guard Extensions(SGX)
+Disabled
+
+10
+Overclocking\CPU Features\CFG Lock
+Disabled
+
+1
+Overclocking\CPU Features\Intel Virtualization Tech
+Enabled
+
+2
+Setting\Advance\PCI Subsystem Settings\Above 4G memory/Crypto Currency mining
+Enabled
+
+3
+Hyper-Threading
+None
+
+4
+Execute Disable Bit
+None
+
+5
+Setting\Advance\USB Configuration\XHCI Hand-off
+Enabled
+
+6
+Setting\Advance\Windows OS Configuration\Windows 10 WHQL Support
+UEFI
+
+7
+Setting\Advance\Integrated Graphics Configuration\Integrated Graphics Share Memory
+64M
+
+8
+Setting\Advance\Integreated Peripherals\SATA Mode
+AHCI
+
+
+6
+Setting\Boot\Boot mode select
+UEFI
