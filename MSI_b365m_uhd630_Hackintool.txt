@@ -9,6 +9,10 @@ HDMI：MAG B365M MORTAR （来自群网友 QQ 号：9351991 分享提供）
 framebuffer-con0-alldata = 01050900 00080000 C7030000
 
 
+核显接口输出定制
+https://apple.sqlsec.com/6-%E5%AE%9E%E7%94%A8%E5%A7%BF%E5%8A%BF/6-13/
+
+
 
 AAPL,ig-platform-id = 07009B3E
 
