@@ -1,6 +1,15 @@
 教程：利用Hackintool打开第8代核显HDMI/DVI输出的正确姿势
 https://blog.daliansky.net/Tutorial-Using-Hackintool-to-open-the-correct-pose-of-the-8th-generation-core-display-HDMI-or-DVI-output.html
 
+核显接口输出定制
+https://www.cnblogs.com/Bulletgod/p/16503729.html
+
+微星 MSI
+HDMI：MAG B365M MORTAR （来自群网友 QQ 号：9351991 分享提供）
+framebuffer-con0-alldata = 01050900 00080000 C7030000
+
+
+
 AAPL,ig-platform-id = 07009B3E
 
 framebuffer-con0-busid = 05000000
