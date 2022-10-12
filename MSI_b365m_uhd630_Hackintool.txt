@@ -13,6 +13,15 @@ framebuffer-con0-alldata = 01050900 00080000 C7030000
 https://apple.sqlsec.com/6-%E5%AE%9E%E7%94%A8%E5%A7%BF%E5%8A%BF/6-13/
 
 
+核显集成显卡驱动
+https://www.youtube.com/watch?v=ODa0vaG-jMA
+Boot-args igfxframe=0x191B0000
+
+黑苹果 | 使用WhateverGreen驱动Intel核显
+
+https://blog.zuiyu1818.cn/posts/Hac_Intel_Graphics.html
+
+
 
 AAPL,ig-platform-id = 07009B3E
 
