@@ -2,6 +2,7 @@
 https://blog.daliansky.net/Tutorial-Using-Hackintool-to-open-the-correct-pose-of-the-8th-generation-core-display-HDMI-or-DVI-output.html
 
 AAPL,ig-platform-id = 07009B3E
+
 framebuffer-con0-busid = 05000000
 framebuffer-con0-enable = 01000000
 framebuffer-con0-flags = C7030000
